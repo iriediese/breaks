@@ -8,7 +8,7 @@ run `python breaks.py <homeserver> <username> <password>`
 
 bot commands:
 - `!echo [args...]` echoes back the args to you, for debugging 
-- `!start <minutes>` starts the timer
+- `!start <work_minutes> <break_minutes>` starts the timer
 - `!stop` stops the timer
   
-if the timer is running, the bot will tell you to take a break every `<minutes>` minutes.
+if the timer is running, the bot will tell you to take a break after `<work_minutes>` minutes, and to start working again after `<break_minutes>` minutes.
