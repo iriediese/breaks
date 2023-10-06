@@ -40,7 +40,7 @@ async def echo(room, message):
             tasks[room].cancel()
             await asyncio.sleep(0.5)
         await bot.api.send_text_message(
-                room.room_id, "starting timer for " + duration + " minutes"
+                room.room_id, "starting timer for " + work_duration + " minutes with " + break_duration + " minutes break."
                 )
         tasks[room] = asyncio.create_task(thread_function(int(work_duration), int(break_duration), room))
 
