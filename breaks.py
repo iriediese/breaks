@@ -4,15 +4,21 @@ import asyncio
 import sys
 
 creds = botlib.Creds(sys.argv[1], sys.argv[2], sys.argv[3])
+DEFAULT_WORK_DURATION = "50"
+DEFAULT_BREAK_DURATION = "10"
 bot = botlib.Bot(creds)
 PREFIX = '!'
 tasks = {}
 
-async def thread_function(duration, room):
+async def thread_function(work_duration, break_duration, room):
     while True:
-        await asyncio.sleep(60 * duration)
+        await asyncio.sleep(60 * work_duration)
         await bot.api.send_text_message(
                 room.room_id, "take a break."
+                )
+        await asyncio.sleep(60 * break_duration)
+        await bot.api.send_text_message(
+                room.room_id, "break over."
                 )
 
 @bot.listener.on_message_event
@@ -25,7 +31,8 @@ async def echo(room, message):
                 )
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("start"):
-        duration = match.args()[0] if match.args() and str.isdigit(match.args()[0]) else "60"
+        work_duration = match.args()[0] if match.args() and str.isdigit(match.args()[0]) else DEFAULT_WORK_DURATION    
+        break_duration = match.args()[1] if match.args() and str.isdigit(match.args()[1]) else DEFAULT_BREAK_DURATION
         if room in tasks and not tasks[room].cancelled():
             await bot.api.send_text_message(
                     room.room_id, "timer already running. cancelling "
@@ -35,7 +42,7 @@ async def echo(room, message):
         await bot.api.send_text_message(
                 room.room_id, "starting timer for " + duration + " minutes"
                 )
-        tasks[room] = asyncio.create_task(thread_function(int(duration), room))
+        tasks[room] = asyncio.create_task(thread_function(int(work_duration), int(break_duration), room))
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("stop"):
         if room in tasks and not tasks[room].cancelled():
